@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login with Google</title>
+</head>
+<body>
+    <h1>Login with Google</h1>
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <p>Welcome, {{ app.user.username }}! You are already authenticated.</p>
+        <a href="{{ path('app_logout') }}">Logout</a>
+    {% else %}
+        <p>Please log in with your Google account:</p>
+        <a href="{{ path('auth_oauth_connect', {service: 'google'}) }}">Login with Google</a>
+    {% endif %}
+</body>
+</html>
