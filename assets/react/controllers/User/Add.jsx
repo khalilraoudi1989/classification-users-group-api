@@ -7,14 +7,18 @@ const Add = ({ onAddUser }) => {
     lastName: '',
     email: '',
     type: '',
-    createdDate: '',
     password: '',
+    phone: '',
+    age: '',
   });
 
+  const [successMessage, setSuccessMessage] = useState('');
+
   const handleChange = (e) => {
+    const value = e.target.name === 'age' ? parseInt(e.target.value, 10) : e.target.value;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
     });
   };
 
@@ -22,49 +26,68 @@ const Add = ({ onAddUser }) => {
     e.preventDefault();
 
     try {
-      // Vérifier si tous les champs obligatoires sont remplis
       const requiredFields = [
         'firstName',
         'lastName',
         'email',
         'type',
-        'createdDate',
         'password',
+        'phone',
+        'age',
       ];
+
       const hasEmptyFields = requiredFields.some((field) => !formData[field]);
 
       if (!hasEmptyFields) {
-        // Effectuez une requête POST pour ajouter un nouvel utilisateur
-        await axios.post('http://127.0.0.1:8000/api/users', JSON.stringify(formData), {
-            headers: {
-                'Content-Type': 'application/Id+json', // Assurez-vous que le Content-Type est correct
-            },
-            });
-        // Appeler la fonction de l'App pour mettre à jour la liste des utilisateurs
-        onAddUser(formData);
+        const response = await axios.post('http://127.0.0.1:8000/api/users', formData, {
+          headers: {
+            'Content-Type': 'application/ld+json',
+            'accept': 'application/ld+json'
+          },
+        });
 
-        // Réinitialiser le formulaire après l'ajout
+        if (typeof onAddUser === 'function') {
+          onAddUser(response.data);
+        } else {
+          console.error('onAddUser is not a function');
+        }
+
+        setSuccessMessage('The user has been successfully added!');
+
         setFormData({
           firstName: '',
           lastName: '',
           email: '',
           type: '',
-          createdDate: '',
           password: '',
+          phone: '',
+          age: '',
         });
       } else {
-        console.error('Tous les champs obligatoires doivent être remplis.');
+        console.error('All required fields must be filled.');
       }
     } catch (error) {
-      console.error('Error adding user:', error);
+      if (error.response) {
+        console.error('Server responded with an error status:', error.response.status);
+        console.error('Error response data:', error.response.data);
+      } else if (error.request) {
+        console.error('No response received from the server');
+      } else {
+        console.error('Error setting up the request:', error.message);
+      }
     }
   };
 
   return (
-    <div>
-      <h2>Add User</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
+    <div style={{ width: '50%', margin: 'auto', textAlign: 'center' }}>
+      <h2 style={{ marginBottom: '20px' }}>Add a User</h2>
+      {successMessage && (
+        <p style={{ color: 'green', fontWeight: 'bold', marginBottom: '10px' }}>
+          {successMessage}
+        </p>
+      )}
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
           <label htmlFor="firstName">First Name:</label>
           <input
             type="text"
@@ -73,9 +96,10 @@ const Add = ({ onAddUser }) => {
             value={formData.firstName}
             onChange={handleChange}
             required
+            style={{ width: '100%', padding: '5px' }}
           />
         </div>
-        <div>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
           <label htmlFor="lastName">Last Name:</label>
           <input
             type="text"
@@ -84,9 +108,10 @@ const Add = ({ onAddUser }) => {
             value={formData.lastName}
             onChange={handleChange}
             required
+            style={{ width: '100%', padding: '5px' }}
           />
         </div>
-        <div>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
           <label htmlFor="email">Email:</label>
           <input
             type="email"
@@ -95,9 +120,10 @@ const Add = ({ onAddUser }) => {
             value={formData.email}
             onChange={handleChange}
             required
+            style={{ width: '100%', padding: '5px' }}
           />
         </div>
-        <div>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
           <label htmlFor="type">Type:</label>
           <input
             type="text"
@@ -106,20 +132,10 @@ const Add = ({ onAddUser }) => {
             value={formData.type}
             onChange={handleChange}
             required
+            style={{ width: '100%', padding: '5px' }}
           />
         </div>
-        <div>
-          <label htmlFor="createdDate">Created Date:</label>
-          <input
-            type="date"
-            id="createdDate"
-            name="createdDate"
-            value={formData.createdDate}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
           <label htmlFor="password">Password:</label>
           <input
             type="password"
@@ -128,9 +144,33 @@ const Add = ({ onAddUser }) => {
             value={formData.password}
             onChange={handleChange}
             required
+            style={{ width: '100%', padding: '5px' }}
           />
         </div>
-        <button type="submit">Add</button>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
+          <label htmlFor="phone">Phone:</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            value={formData.phone}
+            onChange={handleChange}
+            style={{ width: '100%', padding: '5px' }}
+          />
+        </div>
+        <div style={{ marginBottom: '10px', width: '100%' }}>
+          <label htmlFor="age">Age:</label>
+          <input
+            type="number"
+            id="age"
+            name="age"
+            value={formData.age}
+            onChange={handleChange}
+            style={{ width: '100%', padding: '5px' }}
+          />
+        </div>
+        
+        <button type="submit" style={{ padding: '10px', backgroundColor: '#28a745', color: 'white', border: 'none', cursor: 'pointer' }}>Add</button>
       </form>
     </div>
   );

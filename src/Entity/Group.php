@@ -40,13 +40,16 @@ class Group
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedDate = null;
 
-    #[ORM\OneToMany(mappedBy: 'team', targetEntity: User::class)]
+    #[ORM\ManyToMany(targetEntity: "App\Entity\User", mappedBy: "groups")]
+    #[ORM\JoinTable(name: "user_group")]
+    #[ORM\JoinColumn(name: "group_id", referencedColumnName: "id")]
     private Collection $users;
-
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->setCreatedDate(new \DateTime());
+        $this->setUpdatedDate(new \DateTime());
     }
 
     public function getId(): ?int
@@ -102,35 +105,28 @@ class Group
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
     public function getUsers(): Collection
     {
         return $this->users;
     }
 
-    public function addUser(User $user): static
+    public function addUser(User $user): self
     {
         if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setTeam($this);
+            $this->users[] = $user;
+            $user->addToGroup($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): static
+    public function removeUser(User $user): self
     {
         if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getTeam() === $this) {
-                $user->setTeam(null);
-            }
+            $user->removeFromGroup($this);
         }
 
         return $this;
     }
-
 
 }

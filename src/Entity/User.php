@@ -79,13 +79,19 @@ class User
     private ?string $password = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $google_id = null;
+    private ?string $googleId = null;
 
-    #[ORM\ManyToOne(inversedBy: 'users')]
-    private ?Group $team = null;
+    #[ORM\ManyToMany(targetEntity: "App\Entity\Group", inversedBy: "users")]
+    #[ORM\JoinTable(name: "user_group")]
+    #[ORM\JoinColumn(name: "user_id", referencedColumnName: "id")]
+    private Collection $groups;
 
-    public function __construct()
+    public function __construct($password)
     {
+        $this->groups = new ArrayCollection();
+        $this->setCreatedDate(new \DateTime());
+        $this->setUpdatedDate(new \DateTime());
+        $this->setPassword($password);
     }
 
     public function getId(): ?int
@@ -194,33 +200,55 @@ class User
         return $this->password;
     }
 
-    public function setPassword(string $password): static
+    public function setPassword($password)
     {
-        $this->password = $password;
+        // Générer un sel aléatoire
+        $salt = random_bytes(22); // 22 bytes is the recommended length for Bcrypt
 
-        return $this;
+        // Concaténer le sel au mot de passe
+        $saltedPassword = $salt . $password;
+
+        // Utiliser password_hash avec l'algorithme Bcrypt
+        $hashedPassword = password_hash($saltedPassword, PASSWORD_BCRYPT);
+
+        // Stocker le mot de passe haché
+        $this->password = $hashedPassword;
     }
 
     public function getGoogleId(): ?string
     {
-        return $this->google_id;
+        return $this->googleId;
     }
 
-    public function setGoogleId(?string $google_id): static
+    public function setGoogleId(?string $googleId): static
     {
-        $this->google_id = $google_id;
+        $this->googleId = $googleId;
 
         return $this;
     }
 
-    public function getTeam(): ?Group
+    /**
+     * @return Collection|Group[]
+     */
+    public function getGroups(): Collection
     {
-        return $this->team;
+        return $this->groups;
     }
 
-    public function setTeam(?Group $team): static
+    public function addToGroup(Group $group): self
     {
-        $this->team = $team;
+        if (!$this->groups->contains($group)) {
+            $this->groups[] = $group;
+            $group->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFromGroup(Group $group): self
+    {
+        $this->groups->removeElement($group);
+        $group->removeUser($this);
 
         return $this;
     }

@@ -1,0 +1,43 @@
+/* NavigationStyles.css */
+
+/* Navbar Styles */
+.navbar {
+    background-color: #f8f9fa;
+  }
+  
+  .navbar-brand {
+    font-weight: bold;
+    color: #343a40;
+  }
+  
+  .navbar-nav .nav-link {
+    color: #343a40;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    color: #007bff;
+  }
+  
+  /* Container Styles */
+  .container-fluid {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  
+  /* NavItem Styles */
+  .navbar-nav {
+    display: flex;
+    align-items: center;
+  }
+  
+  .nav-item {
+    margin-right: 10px;
+  }
+  
+  /* Additional Styling */
+  body {
+    padding-top: 56px;
+  }
+  
