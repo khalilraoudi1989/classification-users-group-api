@@ -16,6 +16,9 @@ const Navigate= () =>{
         <NavItem style={{ marginRight: '10px', display: 'inline' }}>
           <NavLink tag={Link} to="/groups" style={{ color: '#343a40', textDecoration: 'none', outline: 'none' }}>Group</NavLink>
         </NavItem>
+        <NavItem style={{ marginRight: '10px', display: 'inline' }}>
+          <NavLink tag={Link} to="/login" style={{ color: '#343a40', textDecoration: 'none', outline: 'none' }}>SignIn</NavLink>
+        </NavItem>
       </Nav>
     </div>
   </Container>

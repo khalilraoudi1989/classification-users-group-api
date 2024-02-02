@@ -51,18 +51,35 @@ const Groups = () => {
               <tr style={{ backgroundColor: '#f8f9fa' }}>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Name</th>
                 <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Description</th>
+                <th style={{ padding: '10px', border: '1px solid #dee2e6' }}>Action</th>
               </tr>
             </thead>
             {/* Table Body */}
             <tbody>
               {groups.map((group) => {
-                const GroupId = group['@id'] ? group['@id'].split('/').pop() : 'defaultGroupId';
+                const groupId = group['@id'] ? group['@id'].split('/').pop() : 'defaultGroupId';
                 return (
-                  <tr key={GroupId} style={{ borderBottom: '1px solid #dee2e6' }}>
+                  <tr key={groupId} style={{ borderBottom: '1px solid #dee2e6' }}>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{group.name}</td>
                     <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>{group.description}</td>
-                    <td style={{ padding: '10px', border: '1px solid #dee2e6' }}>
-                    </td>
+                    <Link
+                        to={`/group/edit/${groupId}`}
+                        style={{ textDecoration: 'none', marginRight: '5px', color: '#007bff', display: 'inline-block' }}
+                      >
+                        <i className="fas fa-edit"></i> Edit
+                    </Link>
+                    <Link
+                        to={`/group/show/${groupId}`}
+                        style={{ textDecoration: 'none', marginRight: '5px', color: '#007bff', display: 'inline-block' }}
+                      >
+                        <i className="fas fa-eye"></i> Show
+                      </Link>
+                      <Link
+                        to={`/group/delete/${groupId}`}
+                        style={{ textDecoration: 'none', marginRight: '5px', color: 'red', display: 'inline-block' }}
+                      >
+                        <i className="fas fa-trash-alt"></i> Delete
+                      </Link>
                   </tr>
                 );
               })}

@@ -5,4 +5,6 @@ import './styles/app.css';
 
 // start the Stimulus application
 import './bootstrap';
+import 'bootstrap/dist/css/bootstrap.css';
+
 registerReactControllerComponents(require.context('./react/controllers', true, /\.(j|t)sx?$/));
